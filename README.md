@@ -28,4 +28,4 @@ obstacles and preferring "cheap" aisles.
 - '~' difficult floor (cost 3);
 - 'S' = start;
 - 'G' = goal;
-- Movement in 4 directions (N, S, E, W).
+- Movement in 4 directions (N, S, L, O).
