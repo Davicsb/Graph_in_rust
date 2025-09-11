@@ -1,18 +1,20 @@
 use std::collections::HashMap;
+use std::fs;
+use std::io;
 
 #[derive(Debug)]
 pub struct Node {
     value: usize,
-    weight: usize,
+    weight: i32,
     next: Option<Box<Node>>,
 }
 
 impl Node {
-    pub fn new(value: usize, weight: usize) -> Self {
-        Node { value, weight, next: None }
+    pub fn new(value: usize, weight: i32) -> Self {
+        Node {value, weight, next: None}
     }
 
-    pub fn append(&mut self, value: usize, weight: usize) {
+    pub fn append(&mut self, value: usize, weight: i32) {
         match &mut self.next {
             Some(next_node) => next_node.append(value, weight),
             None => self.next = Some(Box::new(Node::new(value, weight))),
@@ -30,17 +32,17 @@ impl Node {
 
 #[derive(Debug)]
 pub struct Graph {
+    num_vertex: usize,
+    num_edges: usize,
     adj: HashMap<usize, Option<Box<Node>>>,
 }
 
 impl Graph {
-    pub fn new() -> Self {
-        Graph {
-            adj: HashMap::new(),
-        }
+    pub fn new(num_vertex: usize, num_edges: usize) -> Self {
+        Graph {num_vertex, num_edges, adj: HashMap::new()}
     }
 
-    pub fn edge(&mut self, origin: usize, destination: usize, destination_weight: usize) {
+    pub fn edge(&mut self, origin: usize, destination: usize, destination_weight: i32) {
         // Use `entry` para garantir que a origem tem um valor válido
         let head = self.adj.entry(origin).or_insert(None);
         match head {
@@ -58,4 +60,34 @@ impl Graph {
             println!();
         }
     }
+}
+
+pub fn read_graph(path: &str){
+    let content = match fs::read_to_string(&path) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("Error: can't read graph on '{}'. Erro: {}", path, e);
+            return;
+        }
+    };
+
+    let numbers: Vec<i32> = content
+        .split_whitespace()  // Retorna um iterador de fatias de string (&str)
+        .filter_map(|palavra| palavra.parse::<i32>().ok()) // Tenta o parse e filtra os erros
+        .collect();          // Coleta todos os números válidos em um vetor
+
+    let num_vertices = numbers[0] as usize;
+    let num_edges = numbers[1] as usize;
+    let mut graph = Graph::new(num_vertices, num_edges);
+
+    let arestas_data = &numbers[2..];
+
+    for aresta_chunk in arestas_data.chunks(3) {
+        let origem = aresta_chunk[0] as usize;
+        let destino = aresta_chunk[1] as usize;
+        let peso = aresta_chunk[2]; // O peso já é i32
+        graph.edge(origem, destino, peso);
+    }
+
+    graph.print();
 }
