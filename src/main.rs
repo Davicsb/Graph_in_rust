@@ -1,7 +1,9 @@
+mod scenario_one;
 mod graph;
+mod floydwarshall;
 
-use graph::*;
+use crate::scenario_one::first_scenario;
 
 fn main() {
-    graph::read_graph("data/graph1.txt");
+    first_scenario();
 }
