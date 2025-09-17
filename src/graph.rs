@@ -4,9 +4,9 @@ use std::io;
 
 #[derive(Debug)]
 pub struct Node {
-    value: usize,
-    weight: i32,
-    next: Option<Box<Node>>,
+    pub value: usize,
+    pub weight: i32,
+    pub next: Option<Box<Node>>,
 }
 
 impl Node {
@@ -34,10 +34,14 @@ impl Node {
 pub struct Graph {
     num_vertex: usize,
     num_edges: usize,
-    adj: HashMap<usize, Option<Box<Node>>>,
+    pub adj: HashMap<usize, Option<Box<Node>>>,
 }
 
 impl Graph {
+    pub fn num_vertex(&self) -> usize {
+        self.num_vertex
+    }
+
     pub fn new(num_vertex: usize, num_edges: usize) -> Self {
         Graph {num_vertex, num_edges, adj: HashMap::new()}
     }
@@ -62,14 +66,8 @@ impl Graph {
     }
 }
 
-pub fn read_graph(path: &str){
-    let content = match fs::read_to_string(&path) {
-        Ok(c) => c,
-        Err(e) => {
-            eprintln!("Error: can't read graph on '{}'. Erro: {}", path, e);
-            return;
-        }
-    };
+pub fn read_graph(path: &str) -> Result<Graph, io::Error>{
+    let content = fs::read_to_string(path)?;
 
     let numbers: Vec<i32> = content
         .split_whitespace()  // Retorna um iterador de fatias de string (&str)
@@ -83,11 +81,13 @@ pub fn read_graph(path: &str){
     let arestas_data = &numbers[2..];
 
     for aresta_chunk in arestas_data.chunks(3) {
-        let origem = aresta_chunk[0] as usize;
-        let destino = aresta_chunk[1] as usize;
+        let origem = (aresta_chunk[0] - 1) as usize;
+        let destino = (aresta_chunk[1] - 1) as usize;
         let peso = aresta_chunk[2]; // O peso já é i32
         graph.edge(origem, destino, peso);
     }
 
+    print!("Grafo lido:\n");
     graph.print();
+    Ok(graph)
 }
