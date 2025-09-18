@@ -15,6 +15,7 @@ pub fn vertice_mais_proximo(distancias: &Vec<i32>, A: &Vec<usize>) -> Option<usi
     escolhido.copied()
 }
 
+//retorna um vetor com a interseção dos vértices em A e os vizinhos de um certo vértice
 pub fn intersecao(A: &Vec<usize>, grafo: &Graph, vertice: &usize) -> Vec<usize> { // O(n) tem como deixar O(1) transformando A em hashset
     let mut intersec = grafo.vizinhos(vertice);
     intersec.retain(|x| A.contains(x));
@@ -22,6 +23,7 @@ pub fn intersecao(A: &Vec<usize>, grafo: &Graph, vertice: &usize) -> Vec<usize> 
     intersec
 }
 
+//Retorna um vetor com o caminho pra o destino <- acho melhor botar isso num arquivo rs de utilidade
 pub fn reconstruir_caminho(origem: usize, destino: usize, anterior: &Vec<Option<usize>>) -> Vec<usize>{
     let mut caminho = vec![];
     let mut atual = Some(destino);
@@ -42,7 +44,7 @@ pub fn dijikstra(grafo: &Graph, origem: &usize) -> (Vec<i32>, Vec<Option<usize>>
     let num_v = grafo.num_vertex() + 1;
 
     // Linha 1: Cria um vetor de distâncias, inicializando todos com INFINITO. Em seguida a distancia com a origem recebe zero
-    let mut d = vec![i32::MAX; num_v];
+    let mut d = vec![i32::MAX/2; num_v]; //ta dividido por 2 pra evitar overflow
     d[*origem] = 0;
 
     //Linha 2: Cria o vetor A (aberto) com os vértices e F (fechado) vazio. em seguida cria o vetor anterior para o caminho minimo
@@ -63,7 +65,7 @@ pub fn dijikstra(grafo: &Graph, origem: &usize) -> (Vec<i32>, Vec<Option<usize>>
         A.retain(|&x| x != r); // mantem apenas itens que não são iguais a r
 
         //Linha 6: fazer a interseção dos vizinhos de r e os vertices que estão em A
-        let mut S = intersecao(&A, &grafo, &r);
+        let S = intersecao(&A, &grafo, &r);
 
         //Linha 7 inicio do loop
         for i in S {
