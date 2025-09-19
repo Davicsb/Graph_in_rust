@@ -8,7 +8,8 @@ This takes into account both the sum of the distances from the vertex in questio
 - A vector with the distances from the central station to the other vertices;
 - The vertex furthest from the central station, along with the distance value;
 - A matrix in which each row represents a candidate vertex for the central station and each column is the minimum distance between the candidate vertex and the vertex representing the column.
-<img width="910" height="449" alt="image" src="https://github.com/user-attachments/assets/b0ac3f7f-85ed-4623-86a0-adca4d891f16" />
+<img width="910" height="449" alt="image" src="https://github.com/user-attachments/assets/b0ac3f7f-85ed-4623-86a0-adca4d891f16" />\
+- '#': Não existe caminho entre os nós.
 ## Scenario 2: Optimizing the Path with Regeneration
 Consider an electric car with efficient battery regeneration via engine braking. The car
 must travel from origin to destination while minimizing the net battery energy (Wh). Uphill/starting sections consume energy (positive weight). Downhill/regenerative braking sections return energy to the battery (negative weight).
