@@ -13,6 +13,7 @@ Consider an electric car with efficient battery regeneration via engine braking.
 must travel from origin to destination while minimizing the net battery energy (Wh). Uphill/starting sections consume energy (positive weight). Downhill/regenerative braking sections return energy to the battery (negative weight).
 We model the road network as a directed graph (energy is not symmetrical in either direction), and
 the shape of the input graph is similar to that of the previous scenario.
+<img width="910" height="449" alt="image" src="https://github.com/user-attachments/assets/b0ac3f7f-85ed-4623-86a0-adca4d891f16" />
 ### Expected output:
 - The shortest path, always starting from vertex 0 to vertex 6;
 - Sum of the path cost.
