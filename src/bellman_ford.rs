@@ -24,7 +24,11 @@ pub fn bellman_ford(grafo: &Graph, origem: &usize) -> (Vec<i32>, Vec<Option<usiz
 
                 if d[i] > d[*j] + v{
                     //Checagem pra ver se o grafo tem ciclo negativo
-                    if iteracoes == num_v - 1{ //Na iteração V (lembre que iteracoes começou com 0), se houver outra mudança é porque o grafo tem ciclo negativo
+<<<<<<< HEAD
+                    if (iteracoes == num_v - 1){ //Na iteração V (lembre que iteracoes começou com 0), se houver outra mudança é porque o grafo tem ciclo negativo
+=======
+                    if(iteracoes == num_v - 1){ //Na iteração V (lembre que iteracoes começou com 0), se houver outra mudança é porque o grafo tem ciclo negativo
+>>>>>>> 633d766521f07d845a7d5167b435455237eb13b2
                         panic!("O grafo tem ciclo negativo, o algoritmo de bellman-ford não pode ser utilizado.");
                     }
 
