@@ -63,7 +63,7 @@ pub fn dijikstra(grafo: &Graph, origem: &usize) -> (Vec<i32>, Vec<Option<usize>>
         A.retain(|&x| x != r); // mantem apenas itens que não são iguais a r
 
         //Linha 6: fazer a interseção dos vizinhos de r e os vertices que estão em A
-        let mut S = intersecao(&A, &grafo, &r);
+        let S = intersecao(&A, &grafo, &r);
 
         //Linha 7 inicio do loop
         for i in S {

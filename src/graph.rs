@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 use std::fs;
 use std::io;
+use std::error::Error;
+use std::fs::File;
+use std::io::{BufRead, BufReader, BufWriter, Write};
 
 #[derive(Debug)]
 pub struct Node {
@@ -148,4 +151,108 @@ pub fn read_graph(path: &str) -> Result<Graph, io::Error>{
     print!("Grafo lido:\n");
     graph.print();
     Ok(graph)
+}
+
+pub fn read_map(path: &str) -> Result<(Vec<Vec<char>>, (usize, usize), (usize, usize)), Box<dyn Error>> {
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+
+    let mut lines = reader.lines();
+
+    let first_line = lines.next().ok_or("Arquivo está vazio")??;
+    let dims: Vec<usize> = first_line
+        .split_whitespace()
+        .map(|s| s.parse())
+        .collect::<Result<_, _>>()?;
+
+    let mut matrix: Vec<Vec<char>> = Vec::new();
+    let mut start: Option<(usize, usize)> = None;
+    let mut goal: Option<(usize, usize)> = None;
+
+    for (y, line_result) in lines.enumerate() {
+        let line = line_result?;
+        let mut char_vec: Vec<char> = Vec::new();
+        for (x, ch) in line.chars().enumerate() {
+            if ch == 'S' {
+                start = Some((x, y));
+            }
+            if ch == 'G' {
+                goal = Some((x, y));
+            }
+            char_vec.push(ch);
+        }
+        matrix.push(char_vec);
+    }
+
+    let start_coords = start.ok_or("Caractere de início 'S' não foi encontrado no mapa.")?;
+    let goal_coords = goal.ok_or("Caractere de fim 'G' não foi encontrado no mapa.")?;
+    
+    Ok((matrix, start_coords, goal_coords))
+}
+
+fn create_ordered_matrix(rows: usize, cols: usize) -> Vec<Vec<i32>> {
+    let mut matrix = Vec::with_capacity(rows);
+
+    let mut counter = 1;
+
+    for _ in 0..rows {
+        let mut current_row = Vec::with_capacity(cols);
+        for _ in 0..cols {
+            current_row.push(counter);
+            counter += 1;
+        }
+        matrix.push(current_row);
+    }
+
+    matrix
+}
+
+
+fn get_peso(terreno: char) -> Option<i32> {
+    match terreno {
+        '.' => Some(1),
+        '~' => Some(3),
+        'S' | 'G' => Some(1),
+        '#' => None,
+        _ => Some(1),
+    }
+}
+
+pub fn map_to_txt(matrix: &[Vec<char>]) -> io::Result<()> {
+    let rows = matrix.len();
+    let cols = matrix[0].len();
+    let num_vertex = rows * cols;
+    let ordered_matrix = create_ordered_matrix(rows, cols);
+
+    let mut arestas: Vec<String> = Vec::new();
+    for y in 0..rows {
+        for x in 0..cols {
+            let no_atual_id = ordered_matrix[y][x];
+
+            let vizinhos = [(y.wrapping_sub(1), x), (y + 1, x), (y, x.wrapping_sub(1)), (y, x + 1)];
+
+            for (viz_y, viz_x) in vizinhos {
+                if viz_y < rows && viz_x < cols {
+                    let terreno_vizinho = matrix[viz_y][viz_x];
+                    if let Some(peso) = get_peso(terreno_vizinho) {
+                        let no_vizinho_id = ordered_matrix[viz_y][viz_x];
+                        let aresta_str = format!("{}   {}   {}", no_atual_id, no_vizinho_id, peso);
+                        arestas.push(aresta_str);
+                    }
+                }
+            }
+        }
+    }
+
+    let path = "data/graph3.txt";
+    let file = File::create(path)?;
+    let mut writer = BufWriter::new(file);
+
+    writeln!(writer, "{} {}", num_vertex, arestas.len())?;
+
+    for aresta in arestas {
+        writeln!(writer, "{}", aresta)?;
+    }
+
+    Ok(())
 }
