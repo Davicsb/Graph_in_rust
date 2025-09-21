@@ -20,22 +20,24 @@ pub fn read_graph_slope(path: &str) -> Result<Graph, io::Error>{ // talvez seja 
     let arestas_data = &numbers[2..];
 
     for aresta_chunk in arestas_data.chunks(3) {
-        let origem = (aresta_chunk[0] - 1) as usize;
-        let destino = (aresta_chunk[1] - 1) as usize;
+        let origem = (aresta_chunk[0]) as usize;
+        let destino = (aresta_chunk[1]) as usize;
         let peso = aresta_chunk[2]; // O peso já é i32
         graph.edge(origem, destino, peso);
-        //o grafo é pra ser direcionado e uma rampa, portanto: (i,j) = x ^ (j,i) = -x
-        graph.edge(destino, origem, peso * -1);
+
+        //o grafo é pra ser direcionado e uma rampa, portanto: (i,j) = x ^ (j,i) = -x <-- Ops! Tudo errado
+        //graph.edge(destino, origem, peso * -1);
     }
 
     print!("Graph read:\n");
-    graph.print();
+    //graph.print();
     Ok(graph)
 }
 
 pub fn second_scenario(){
-    let gr = match read_graph_slope("data/graph1.txt") {
+    let gr = match read_graph_slope("data/graph2.txt") {
         Ok(graph_sucesso) => {
+            graph_sucesso.print();
             println!("Graph successfully read from file!\n");
             graph_sucesso // Se der certo, `gr` recebe o valor do grafo
         },
@@ -48,7 +50,6 @@ pub fn second_scenario(){
     let (distancias, anteriores) = bellman_ford(&gr, &0);
     let caminho = reconstruir_caminho(0, 6, &anteriores);
 
-    gr.print();
     println!("The path from vertex {} to {} is: {:?}", 0, 6, caminho);
     println!("The total cost of the trip is: {:?}", distancias[6]);
 }
