@@ -1,41 +1,41 @@
-use std::io;
-use std::fs;
+//! # Cenário 2: Otimizando caminho com regeneração
+//! ## Descrição
+//! Considere um carro elétrico com regeneração de bateria eficiente por freio-motor. O carro deve ir da origem ao destino minimizando a energia líquida da bateria (Wh). Trechos subida/arranque consomem energia (peso positivo). Trechos descida/frenagem regenerativa devolvem energia à bateria (peso negativo).
+//! ## Output esperado
+//! O nó que representa a estação central escolhida;\
+//! O caminho mínimo, saindo sempre do vértice 0 até o vértice 6;\
+//! Somatório do custo do caminho.
+//! ## Algortimo utilizado
+//! Bellman Ford.
+//! ### Motivação
+//! O principal motivo da escolha foram as arestas negativas que o Dijkstra não suporta, e não consumir tanta memória como o Floyd Warshall. O grafo também não apresenta ciclos negativos, possibilitando o uso do algoritmo.
 
-use crate::bellman_ford::bellman_ford;
-use crate::dijkstra::reconstruir_caminho;
-use crate::graph::Graph;
+pub use std::io;
+pub use std::fs;
 
-pub fn read_graph_slope(path: &str) -> Result<Graph, io::Error>{ // talvez seja melhor só usar a função read_graph com um parâmetro a mais
-    let content = fs::read_to_string(path)?;
+pub use crate::graph::read_graph;
+pub use crate::bellman_ford::bellman_ford;
+pub use crate::dijkstra::reconstruir_caminho;
+pub use crate::graph::Graph;
 
-    let numbers: Vec<i32> = content
-        .split_whitespace()  // Retorna um iterador de fatias de string (&str)
-        .filter_map(|palavra| palavra.parse::<i32>().ok()) // Tenta o parse e filtra os erros
-        .collect();          // Coleta todos os números válidos em um vetor
-
-    let num_vertices = numbers[0] as usize;
-    let num_edges = numbers[1] as usize;
-    let mut graph = Graph::new(num_vertices, num_edges);
-
-    let arestas_data = &numbers[2..];
-
-    for aresta_chunk in arestas_data.chunks(3) {
-        let origem = (aresta_chunk[0]) as usize;
-        let destino = (aresta_chunk[1]) as usize;
-        let peso = aresta_chunk[2]; // O peso já é i32
-        graph.edge(origem, destino, peso);
-
-        //o grafo é pra ser direcionado e uma rampa, portanto: (i,j) = x ^ (j,i) = -x <-- Ops! Tudo errado
-        //graph.edge(destino, origem, peso * -1);
-    }
-
-    print!("Graph read:\n");
-    //graph.print();
-    Ok(graph)
-}
-
+/// # Função de chamada do primeiro cenário
+/// ## Mudando o grafo
+/// Para mudar o grafo lido basta alterar o caminho presente na seguinte função:
+/// ```rust
+///    let gr = match read_graph("data/graph2.txt")
+/// ```
+/// ## Chamada do Bellman Ford
+/// ```rust
+///    let (distancias, anteriores) = bellman_ford(&gr, &0);
+/// ```
+/// ## Outputs
+/// ```rust
+///    let caminho = reconstruir_caminho(0, 6, &anteriores);
+///    println!("The path from vertex {} to {} is: {:?}", 0, 6, caminho);
+//     println!("The total cost of the trip is: {:?}", distancias[6]);
+/// ```
 pub fn second_scenario(){
-    let gr = match read_graph_slope("data/graph2.txt") {
+    let gr = match read_graph("data/graph2.txt") {
         Ok(graph_sucesso) => {
             graph_sucesso.print();
             println!("Graph successfully read from file!\n");
