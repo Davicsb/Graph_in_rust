@@ -71,11 +71,11 @@ fn print_vector(vector : &Vec<i32>){
 pub fn first_scenario(){
     let gr = match read_graph("data/graph1.txt") {
         Ok(graph_sucesso) => {
-            println!("Grafo lido com sucesso do arquivo!\n");
+            println!("Graph successfully read from file!\n");
             graph_sucesso // Se der certo, `gr` recebe o valor do grafo
         },
         Err(e) => {
-            eprintln!("Erro fatal ao ler o grafo: {}\n", e);
+            eprintln!("Fatal error reading graph: {}\n", e);
             return; // Sai do programa se não conseguir ler o arquivo
         }
     };
@@ -86,14 +86,14 @@ pub fn first_scenario(){
     let (central_station_vector, farthest_station, farthest_distance) = station_vector(&matrix, central_station, num_v);
 
 
-    print!("O nó que representa a estação central escolhida: {}\n", central_station);
+    print!("The node that represents the choosen central station: {}\n", central_station);
     print!("\n");
-    print!("Um vetor com as distâncias da estação central até os demais vértices:");
+    print!("A vector with the distances from the central station to the other vertices:");
     print_vector(&central_station_vector);
     print!("\n");
-    print!("O vértice mais distante da estação central, junto com o valor de distância: {}, d = {}\n", farthest_station, farthest_distance);
+    print!("The vertex furthest from the central station, along with the distance value: {}, d = {}\n", farthest_station, farthest_distance);
     print!("\n");
-    print!("matrix em que cada linha representa um vértice candidato à estação central e cada coluna é a distância mínima entre o vértice candidato e o vértice representante da coluna:\n");
+    print!("Matrix in which each row represents a candidate vertex for the central station and each column is the minimum distance between the candidate vertex and the column's representative vertex:\n");
     print_matrix(&matrix, num_v);
     print!("\n");
 

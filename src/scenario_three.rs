@@ -23,8 +23,8 @@ pub fn caminho_coord(caminho: &Vec<usize>) -> Vec<&str>{
         let res = j as isize - i as isize;
 
         match res {
-            1 => coords.push("L"),  //Leste
-            -1 => coords.push("O"), //Oeste
+            1 => coords.push("E"),  //Leste
+            -1 => coords.push("W"), //Oeste
             15 => coords.push("S"), //Sul
             -15 => coords.push("N"),//Norte
             _ => coords.push("?")   // case default
@@ -39,28 +39,28 @@ pub fn third_scenario(){
     let mut g_node = 0;
 
     if let Ok((matrix, start, goal)) = read_map("data/grid_example.txt") {
-        println!("Mapa lido com sucesso!");
-        println!("Início: {:?}, Fim: {:?}", start, goal);
+        println!("Map read successfully!");
+        println!("Start: {:?}, Goal: {:?}", start, goal);
 
         s_node = achar_node(&start, 15);
         g_node = achar_node(&goal, 15);
         //println!("{} {}", s_node, g_node);
 
         if let Err(e) = map_to_txt(&matrix) {
-            eprintln!("Erro ao escrever o arquivo de grafo: {}", e);
+            eprintln!("Error writing graph file: {}", e);
         }
 
     } else {
-        eprintln!("Falha ao ler o mapa do arquivo.");
+        eprintln!("Failed to read map from file.");
     }
 
     let gr = match read_graph("data/graph3.txt") {
         Ok(graph_sucesso) => {
-            println!("Grafo lido com sucesso do arquivo!\n");
+            println!("Graph successfully read from file!\n");
             graph_sucesso // Se der certo, `gr` recebe o valor do grafo
         },
         Err(e) => {
-            eprintln!("Erro fatal ao ler o grafo: {}\n", e);
+            eprintln!("Fatal error reading graph: {}\n", e);
             return; // Sai do programa se não conseguir ler o arquivo
         }
     };
@@ -69,7 +69,7 @@ pub fn third_scenario(){
     let caminho = reconstruir_caminho(s_node, g_node, &anteriores);
     let coords = caminho_coord(&caminho);
 
-    println!("O caminho de S até G é: {:?}", caminho);
-    println!("Ou seja, as direções serão: {:?}", coords);
-    println!("O custo do caminho será: {}", distancias[g_node]);
+    println!("The path from S to G is: {:?}", caminho);
+    println!("That is, the directions will be: {:?}", coords);
+    println!("The cost (sum of all the weights) of the path will be: {}", distancias[g_node]);
 }

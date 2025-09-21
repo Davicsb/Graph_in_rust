@@ -148,7 +148,7 @@ pub fn read_graph(path: &str) -> Result<Graph, io::Error>{
         graph.edge(origem, destino, peso);
     }
 
-    print!("Grafo lido:\n");
+    print!("Graph read:\n");
     graph.print();
     Ok(graph)
 }
@@ -159,7 +159,7 @@ pub fn read_map(path: &str) -> Result<(Vec<Vec<char>>, (usize, usize), (usize, u
 
     let mut lines = reader.lines();
 
-    let first_line = lines.next().ok_or("Arquivo está vazio")??;
+    let first_line = lines.next().ok_or("The file is empty.")??;
     let dims: Vec<usize> = first_line
         .split_whitespace()
         .map(|s| s.parse())
@@ -184,8 +184,8 @@ pub fn read_map(path: &str) -> Result<(Vec<Vec<char>>, (usize, usize), (usize, u
         matrix.push(char_vec);
     }
 
-    let start_coords = start.ok_or("Caractere de início 'S' não foi encontrado no mapa.")?;
-    let goal_coords = goal.ok_or("Caractere de fim 'G' não foi encontrado no mapa.")?;
+    let start_coords = start.ok_or("Start character 'S' not found in the map.")?;
+    let goal_coords = goal.ok_or("Goal character 'G' not found in the map.")?;
     
     Ok((matrix, start_coords, goal_coords))
 }

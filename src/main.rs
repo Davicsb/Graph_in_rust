@@ -12,11 +12,11 @@ use crate::scenario_two::second_scenario;
 use crate::scenario_three::third_scenario;
 
 fn main() {
-    println!("Escolha um cenário:\n1 - Determinando a estação central\n2 - Otimizando caminho com regeneração\n3 - Robô de armazém com obstáculos");
+    println!("Choose a scenario:\n1 - Determining the central station\n2 - Optimizing path with regeneration\n3 - Warehouse robot with obstacles");
     
     let mut input_line = String::new();
-    io::stdin().read_line(&mut input_line).expect("Falha ao ler a linha.");
-    let num : i32 = input_line.trim().parse().expect("O input não é um inteiro");
+    io::stdin().read_line(&mut input_line).expect("Failed to read line.");
+    let num : i32 = input_line.trim().parse().expect("The input is not an integer.");
     //tudo isso pra ler um int...
 
     match num {

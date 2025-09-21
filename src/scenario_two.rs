@@ -28,7 +28,7 @@ pub fn read_graph_slope(path: &str) -> Result<Graph, io::Error>{ // talvez seja 
         graph.edge(destino, origem, peso * -1);
     }
 
-    print!("Grafo lido:\n");
+    print!("Graph read:\n");
     graph.print();
     Ok(graph)
 }
@@ -36,11 +36,11 @@ pub fn read_graph_slope(path: &str) -> Result<Graph, io::Error>{ // talvez seja 
 pub fn second_scenario(){
     let gr = match read_graph_slope("data/graph1.txt") {
         Ok(graph_sucesso) => {
-            println!("Grafo lido com sucesso do arquivo!\n");
+            println!("Graph successfully read from file!\n");
             graph_sucesso // Se der certo, `gr` recebe o valor do grafo
         },
         Err(e) => {
-            eprintln!("Erro fatal ao ler o grafo: {}\n", e);
+            eprintln!("Fatal error reading graph: {}\n", e);
             return; // Sai do programa se não conseguir ler o arquivo
         }
     };
@@ -49,6 +49,6 @@ pub fn second_scenario(){
     let caminho = reconstruir_caminho(0, 6, &anteriores);
 
     gr.print();
-    println!("O caminho para do vértice {} para o {} é: {:?}", 0, 6, caminho);
-    println!("O custo total da viagem é: {:?}", distancias[6]);
+    println!("The path from vertex {} to {} is: {:?}", 0, 6, caminho);
+    println!("The total cost of the trip is: {:?}", distancias[6]);
 }
