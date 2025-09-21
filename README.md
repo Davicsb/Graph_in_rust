@@ -1,6 +1,16 @@
+## Run Code
+Terminal
+```bash
+    cargo run
+```
 ## Documentation
+Terminal
 ```bash
     cargo doc --open
+```
+If you are a WSL user and you don't have WSL Utilities
+```bash
+    sudo apt update && sudo apt install wslu
 ```
 ## Scenario 1: Determining the Central Station
 Consider an undirected graph with weights representing subway points and connections.
