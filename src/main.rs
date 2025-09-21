@@ -11,6 +11,8 @@ use crate::scenario_one::first_scenario;
 use crate::scenario_two::second_scenario;
 use crate::scenario_three::third_scenario;
 
+
+
 fn main() {
     println!("Choose a scenario:\n1 - Determining the central station\n2 - Optimizing path with regeneration\n3 - Warehouse robot with obstacles");
     
