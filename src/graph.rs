@@ -1,9 +1,25 @@
-use std::collections::HashMap;
+//! O presente arquivo concentra a lógica da construção do nosso grafo, o método escolhido foi representação com lista de adjacência, para uma melhor eficiência de memória e para criar familiaridade com a estrutra de HashMap do Rust.
+
+/// Trazendo a coleção de HashMap para a representação do grafo.
+
+pub use std::collections::HashMap;
 use std::fs;
 use std::io;
 use std::error::Error;
-use std::fs::File;
-use std::io::{BufRead, BufReader, BufWriter, Write};
+
+/// Responável pela possibilidade de leituras de arquivo txt no código em todos cenários.
+
+pub use std::fs::File;
+
+/// Responsável pela possibilidade de escrita de arquivo txt presente no Cenário 3.
+
+pub use std::io::{BufRead, BufReader, BufWriter, Write};
+
+/// Reprenta o nó do nosso grafo.
+/// # Atributos
+/// "value" - Valor do vértice (sempre representado por um inteiro positivo);\
+/// "weight" - Valor do peso da aresta (podendo ser negativo ou positivo);\
+/// "next" - Inclui uma referência para o próximo nó.
 
 #[derive(Debug)]
 pub struct Node {
@@ -13,9 +29,14 @@ pub struct Node {
 }
 
 impl Node {
+
+    /// Função para crianção de um novo nó.
+    
     pub fn new(value: usize, weight: i32) -> Self {
         Node {value, weight, next: None}
     }
+
+    /// Função para incluir um nó na lista.
 
     pub fn append(&mut self, value: usize, weight: i32) {
         match &mut self.next {
@@ -23,6 +44,8 @@ impl Node {
             None => self.next = Some(Box::new(Node::new(value, weight))),
         }
     }
+
+    /// Função para printar o nó;
 
     pub fn print(&self) {
         print!("{} (weight: {})", self.value, self.weight);
@@ -33,21 +56,35 @@ impl Node {
     }
 }
 
+/// Reprenta o grafo inteiro.
+/// # Atributos
+/// "num_vertex" - Valor da quatidade de vértices do grafo (sempre representado por um inteiro positivo);\
+/// "num_edges" - Valor da quantidade de arestas do grafo (sempre repesentado por um inteiro positivo);\
+/// "adj" - HashMap dos vértices do grafo.
+
 #[derive(Debug)]
 pub struct Graph {
-    num_vertex: usize,
-    num_edges: usize,
+    pub num_vertex: usize,
+    pub num_edges: usize,
     pub adj: HashMap<usize, Option<Box<Node>>>,
 }
 
 impl Graph {
+
+    /// Função que retorna o número de vérfices do grafo
+
     pub fn num_vertex(&self) -> usize {
         self.num_vertex
     }
 
+    /// Função que cria um novo grafo
+
     pub fn new(num_vertex: usize, num_edges: usize) -> Self {
         Graph {num_vertex, num_edges, adj: HashMap::new()}
     }
+
+    /// Função para adicionar novas arestas no grafo
+
     pub fn edge(&mut self, origin: usize, destination: usize, destination_weight: i32) {
         // Use `entry` para garantir que a origem tem um valor válido
         let head = self.adj.entry(origin).or_insert(None); //pega a lista de vizinhos de origin ou None
@@ -56,6 +93,8 @@ impl Graph {
             None => *head = Some(Box::new(Node::new(destination, destination_weight))),
         }
     }
+
+    /// Função para printar o grafo
 
     pub fn print(&self) {
         for (v, list) in &self.adj {
@@ -67,12 +106,14 @@ impl Graph {
         }
     }
 
-    //retorna os vetores em uma lista
+    /// Retorna os vétices em uma lista
+    
     pub fn vertices_list(&self) -> Vec<usize> {
         (0..=self.num_vertex).collect() //coleta e retorna o vetor (intervalo fechado) <- REVER
     }
 
-    //Retorna uma lsita de vizinhos de um vertice
+    /// Retorna uma lsita de vizinhos de um vertice
+    
     pub fn vizinhos(&self, vertice: &usize) -> Vec<usize> {
         let mut vizinhos = vec![];
 
@@ -89,7 +130,8 @@ impl Graph {
         vizinhos
     }
 
-    //Retorna o vizinho mais próximo
+    /// Retorna o vizinho mais próximo do vértice
+    
     pub fn vizinho_mais_perto(&self, vertice: &usize) -> Option<usize> {
         let mut distancia_minima = i32::MAX;
         let mut escolhido = None;
@@ -107,7 +149,8 @@ impl Graph {
         escolhido
     }
 
-    //Retorna o peso de uma aresta
+    /// Retorna o peso de uma aresta
+    
     pub fn weight(&self, origem: &usize, destino: &usize) -> Option<i32>{
 
         let mut head = match self.adj.get(origem) {
@@ -126,6 +169,17 @@ impl Graph {
     }
 
 }
+
+/// Função que lê o grafo a partir de um arquivo txt.
+/// # Argumentos
+/// 
+/// "path" - A string do caminho do txt do grafo na formatação:\
+/// <num_vertices> <num_arestas>\
+/// <vertice_inicial> <vertice_final> <custo> <- Repetição para cada aresta
+///
+/// # Retorno
+/// 
+/// O grafo completo com um HashMap ou o erro associado a criação.
 
 pub fn read_graph(path: &str) -> Result<Graph, io::Error>{
     let content = fs::read_to_string(path)?;
@@ -152,6 +206,17 @@ pub fn read_graph(path: &str) -> Result<Graph, io::Error>{
     graph.print();
     Ok(graph)
 }
+
+/// Função que lê o mapa do "Cenário 3" a partir de um arquivo txt.
+/// # Argumentos
+/// 
+/// "path" - A string do caminho do txt do mapa.
+///
+/// # Retorno
+/// 
+/// Uma matriz de char igual ao mapa;\
+/// Uma tupla representando as coordenadas da matriz (0 based) do vértice de início do algoritmo ('S');\
+/// Uma tupla representando as coordenadas da matriz (0 based) do vértice de fim do algoritmo ('G');
 
 pub fn read_map(path: &str) -> Result<(Vec<Vec<char>>, (usize, usize), (usize, usize)), Box<dyn Error>> {
     let file = File::open(path)?;
@@ -190,7 +255,17 @@ pub fn read_map(path: &str) -> Result<(Vec<Vec<char>>, (usize, usize), (usize, u
     Ok((matrix, start_coords, goal_coords))
 }
 
-fn create_ordered_matrix(rows: usize, cols: usize) -> Vec<Vec<i32>> {
+/// Cria uma matriz auxiliar para os vértices do mapa do "Cenário 3" a partir do número de linhas e colunas.
+/// # Exemplo 1. rows = 2, cols = 3
+/// ## Output
+/// 1 2 3\
+/// 4 5 6
+/// # Exemplo 2. rows = 2, cols = 2
+/// ## Output
+/// 1 2\
+/// 3 4
+
+pub fn create_ordered_matrix(rows: usize, cols: usize) -> Vec<Vec<i32>> {
     let mut matrix = Vec::with_capacity(rows);
 
     let mut counter = 1;
@@ -207,8 +282,14 @@ fn create_ordered_matrix(rows: usize, cols: usize) -> Vec<Vec<i32>> {
     matrix
 }
 
+/// Relaciona o caracter do mapa com o peso correspondido.
+/// # Caracteres e saídas esperadas
+/// '.' - Existe aresta de peso 1;\
+/// '~' - Existe aresta de peso 3;\
+/// 'S' | 'G' - Existe aresta de peso 1;\
+/// '#' - Não existe aresta (obstáculo intransponível).
 
-fn get_peso(terreno: char) -> Option<i32> {
+pub fn get_peso(terreno: char) -> Option<i32> {
     match terreno {
         '.' => Some(1),
         '~' => Some(3),
@@ -217,6 +298,15 @@ fn get_peso(terreno: char) -> Option<i32> {
         _ => Some(1),
     }
 }
+
+/// Função que tranforma o mapa do "Cenário 3" para o txt com a formatação convencional vistos nos outros cenários.
+/// # Argumentos
+/// 
+/// "matrix" - A matriz de char do mapa lido.
+///
+/// # Retorno
+/// 
+/// O arquito txt na formatação padrão
 
 pub fn map_to_txt(matrix: &[Vec<char>]) -> io::Result<()> {
     let rows = matrix.len();
