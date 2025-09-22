@@ -51,7 +51,7 @@ pub fn reconstruir_caminho(origem: usize, destino: usize, anterior: &Vec<Option<
 /// # Algoritmo e associação com o livro.
 /// ## Argumentos
 /// 
-/// "grafo" - O grafo analisado;
+/// "grafo" - O grafo analisado;\
 /// "origem" - Vértice origem do caminho.
 ///
 /// ## Retorno

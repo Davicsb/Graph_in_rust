@@ -114,6 +114,7 @@ pub fn print_vector(vector : &Vec<i32>){
 pub fn first_scenario(){
     let gr = match read_graph("data/graph1.txt") {
         Ok(graph_sucesso) => {
+            graph_sucesso.print();
             println!("Graph successfully read from file!\n");
             graph_sucesso // Se der certo, `gr` recebe o valor do grafo
         },

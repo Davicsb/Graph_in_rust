@@ -9,7 +9,8 @@ pub mod scenario_one;
 pub mod scenario_two;
 pub mod scenario_three;
 
-use std::io;
+use std::{io::{self, Write}, thread, time};
+pub use clearscreen;
 
 /// # Esse módulo traz consigo o primeiro cenário usando o algoritmo Floyd Warshall;
 /// A função principal tem como objetivo printar na tela os outputs requeritos no projeto "Cenário 1";
@@ -33,18 +34,35 @@ pub use crate::scenario_three::third_scenario;
 /// # A função main orquestra qual cenário será visto, para rodar o Cenário 1 digite no CMD "1" e assim por diante.
 
 pub fn main() {
-    loop {println!("Choose a scenario:\n0 - Exit\n1 - Determining the central station\n2 - Optimizing path with regeneration\n3 - Warehouse robot with obstacles");
+    loop {
+        clearscreen::clear().expect("Falha ao limpar a tela");
+        println!("Choose a scenario:\n0 - Exit\n1 - Determining the central station\n2 - Optimizing path with regeneration\n3 - Warehouse robot with obstacles");
     
-    let mut input_line = String::new();
-    io::stdin().read_line(&mut input_line).expect("Failed to read line.");
-    let num : i32 = input_line.trim().parse().expect("The input is not an integer.");
-    //tudo isso pra ler um int...
+        let mut input_line = String::new();
+        io::stdin().read_line(&mut input_line).expect("Failed to read line.");
+        let num : i32 = input_line.trim().parse().expect("The input is not an integer.");
+        //tudo isso pra ler um int...
 
-    match num {
-        0 => break,
-        1 => first_scenario(),
-        2 => second_scenario(),
-        3 => third_scenario(),
-        _ => println!("Cenário inválido.")
-    };}
+        match num {
+            0 => break,
+            1 => first_scenario(),
+            2 => second_scenario(),
+            3 => third_scenario(),
+            _ => println!("Invalid Sceneario.")
+        };
+        println!("Continue?:\n0 - Exit\n1 - Yes");
+        io::stdout().flush().unwrap();
+        let mut continue_input = String::new();
+        io::stdin().read_line(&mut continue_input).expect("Falha ao ler a linha.");
+        let choose: i32 = match continue_input.trim().parse() {
+            Ok(n) => n,
+            Err(_) => 1, // Se a entrada for inválida, assume que quer continuar
+        };
+
+        match choose {
+            0 => break,
+            _ => continue,
+        };
+    
+    }
 }

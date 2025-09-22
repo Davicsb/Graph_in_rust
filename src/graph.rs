@@ -1,4 +1,7 @@
 //! # Concentra a lógica da construção do grafo, o método escolhido foi representação com lista de adjacência, para uma melhor eficiência de memória e para criar familiaridade com a estrutra de HashMap do Rust.
+//! Importante destacar que nosso grafo é 0-based, já que se a quantidade de vértice for 12 nossa Hash terá indices de 0 a 11.\
+//! Por exemplo, o grafo de exemplo "graph1.txt" tem 12 vértices, enumerados de 1 a 12, quando lemos, transformamos eles em 12 vértices, enumerados de 0 a 11.
+//! Já em "graoh2.txt" temos 7 vértices, enumerados de 0 a 6, por isso não precisamos converter.
 
 /// # Responsável a coleção de HashMap para a representação do grafo.
 
@@ -46,23 +49,30 @@ impl Node {
 
     /// # Função para printar o nó;
 
-    pub fn print(&self) {
-        print!("{} (weight: {})", self.value, self.weight);
+    pub fn print(&self, is_zero_indexed: bool) {
+        if is_zero_indexed == false{
+            print!("{} (weight: {})", self.value + 1, self.weight);
+        }
+        else{
+            print!("{} (weight: {})", self.value, self.weight);
+        }
         if let Some(next) = &self.next {
             print!(" -> ");
-            next.print();
+            next.print(is_zero_indexed);
         }
     }
 }
 
 /// # Reprenta o grafo inteiro.
 /// ## Atributos
+/// "is_zero_based" - Booleano paraque indica grafos que originalmente não são 0-based, para na hora de mostrar o grafo mostrar os valores dos vértices especificados.\
 /// "num_vertex" - Valor da quatidade de vértices do grafo (sempre representado por um inteiro positivo);\
 /// "num_edges" - Valor da quantidade de arestas do grafo (sempre repesentado por um inteiro positivo);\
 /// "adj" - HashMap dos vértices do grafo.
 
 #[derive(Debug)]
 pub struct Graph {
+    pub is_zero_based : bool,
     pub num_vertex: usize,
     pub num_edges: usize,
     pub adj: HashMap<usize, Option<Box<Node>>>,
@@ -78,8 +88,8 @@ impl Graph {
 
     /// # Função que cria um novo grafo
 
-    pub fn new(num_vertex: usize, num_edges: usize) -> Self {
-        Graph {num_vertex, num_edges, adj: HashMap::new()}
+    pub fn new(is_zero_based: bool, num_vertex: usize, num_edges: usize) -> Self {
+        Graph {is_zero_based, num_vertex, num_edges, adj: HashMap::new()}
     }
 
     /// # Função para adicionar novas arestas no grafo
@@ -97,9 +107,14 @@ impl Graph {
 
     pub fn print(&self) {
         for (v, list) in &self.adj {
-            print!("{} -> ", v);
+            if self.is_zero_based == false{
+                print!("{} -> ", v + 1);
+            }
+            else{
+                print!("{} -> ", v);
+            }
             if let Some(node) = list {
-                node.print();
+                node.print(self.is_zero_based);
             }
             println!();
         }
@@ -179,30 +194,90 @@ impl Graph {
 /// ## Retorno
 /// 
 /// O grafo completo com um HashMap ou o erro associado a criação.
-
-pub fn read_graph(path: &str) -> Result<Graph, io::Error>{
+/// ## Indexação
+/// Como estamos utilizando um HashMap precisamos ajustar para vértices 0-based. Como o cenário 2 já está nesse padrão, precisamos criar uma função de detecção.
+/// ```rust
+///    let mut is_zero_indexed = false;
+///    for aresta_chunk in arestas_data.chunks(3) {
+///        if aresta_chunk.len() == 3 {
+///            if aresta_chunk[0] == 0 || aresta_chunk[1] == 0 {
+///                is_zero_indexed = true;
+///                break; 
+///            }
+///        }
+///    }
+/// ```
+/// ...
+/// ```rust
+///     let origem = if is_zero_indexed {
+///                origem_raw as usize
+///            } else {
+///                (origem_raw - 1) as usize
+///            };
+///
+///            let destino = if is_zero_indexed {
+///                destino_raw as usize
+///            } else {
+///                (destino_raw - 1) as usize
+///            };
+/// ```
+pub fn read_graph(path: &str) -> Result<Graph, io::Error> {
     let content = fs::read_to_string(path)?;
 
     let numbers: Vec<i32> = content
-        .split_whitespace()  // Retorna um iterador de fatias de string (&str)
-        .filter_map(|palavra| palavra.parse::<i32>().ok()) // Tenta o parse e filtra os erros
-        .collect();          // Coleta todos os números válidos em um vetor
+        .split_whitespace()
+        .filter_map(|palavra| palavra.parse::<i32>().ok())
+        .collect();
+
+    if numbers.len() < 2 {
+        return Err(io::Error::new(io::ErrorKind::InvalidData, "Arquivo não contém dados de vértices e arestas"));
+    }
 
     let num_vertices = numbers[0] as usize;
     let num_edges = numbers[1] as usize;
-    let mut graph = Graph::new(num_vertices, num_edges);
 
     let arestas_data = &numbers[2..];
-
+    
+    let mut is_zero_indexed = false;
     for aresta_chunk in arestas_data.chunks(3) {
-        let origem = (aresta_chunk[0] - 1) as usize;
-        let destino = (aresta_chunk[1] - 1) as usize;
-        let peso = aresta_chunk[2]; // O peso já é i32
-        graph.edge(origem, destino, peso);
+        if aresta_chunk.len() == 3 {
+            if aresta_chunk[0] == 0 || aresta_chunk[1] == 0 {
+                is_zero_indexed = true;
+                break; 
+            }
+        }
     }
 
-    print!("Graph read:\n");
-    graph.print();
+    let mut graph = Graph::new(is_zero_indexed, num_vertices, num_edges);
+
+    if is_zero_indexed {
+        println!("(Info: Grafo detectado como 0-indexado)");
+    } else {
+        println!("(Info: Grafo detectado como 1-indexado, ajustando índices)");
+    }
+
+    for aresta_chunk in arestas_data.chunks(3) {
+        if aresta_chunk.len() == 3 {
+            let origem_raw = aresta_chunk[0];
+            let destino_raw = aresta_chunk[1];
+            let peso = aresta_chunk[2];
+
+            let origem = if is_zero_indexed {
+                origem_raw as usize
+            } else {
+                (origem_raw - 1) as usize
+            };
+
+            let destino = if is_zero_indexed {
+                destino_raw as usize
+            } else {
+                (destino_raw - 1) as usize
+            };
+            
+            graph.edge(origem, destino, peso);
+        }
+    }
+
     Ok(graph)
 }
 
