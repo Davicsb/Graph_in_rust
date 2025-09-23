@@ -27,7 +27,8 @@ pub fn achar_node(coords: &(usize, usize), coluumns: usize) -> usize {
 }
 
 /// # Transforma um vetor de caminho em um vetor de string com direções
-pub fn caminho_coord(caminho: &Vec<usize>) -> Vec<&str>{
+pub fn caminho_coord(caminho: &Vec<usize>, col: usize) -> Vec<&str>{
+    let col_neg = -(col as isize);
     let mut coords = vec![];
 
     for par in caminho.windows(2) {
@@ -36,11 +37,11 @@ pub fn caminho_coord(caminho: &Vec<usize>) -> Vec<&str>{
         let res = j as isize - i as isize;
 
         match res {
-            1 => coords.push("E"),  //Leste
-            -1 => coords.push("W"), //Oeste
-            15 => coords.push("S"), //Sul
-            -15 => coords.push("N"),//Norte
-            _ => coords.push("?")   // case default
+            1 => coords.push("E"),              //Leste
+            -1 => coords.push("W"),             //Oeste
+            col => coords.push("S"),            //Sul
+            col_neg => coords.push("N"),        //Norte
+            _ => coords.push("?")               // case default
         };
     }
 
@@ -69,13 +70,15 @@ pub fn caminho_coord(caminho: &Vec<usize>) -> Vec<&str>{
 pub fn third_scenario(){
     let mut s_node = 0;
     let mut g_node = 0;
+    let mut cols = 0;
 
     if let Ok((matrix, start, goal)) = read_map("data/grid_example.txt") {
         println!("Map read successfully!");
         println!("Start: {:?}, Goal: {:?}", start, goal);
-
-        s_node = achar_node(&start, 15);
-        g_node = achar_node(&goal, 15);
+        
+        cols = matrix[0].len();
+        s_node = achar_node(&start, cols);
+        g_node = achar_node(&goal, cols);
         //println!("{} {}", s_node, g_node);
 
         if let Err(e) = map_to_txt(&matrix) {
@@ -99,7 +102,7 @@ pub fn third_scenario(){
 
     let (distancias, anteriores) = dijikstra(&gr, &s_node);
     let caminho = reconstruir_caminho(s_node, g_node, &anteriores);
-    let coords = caminho_coord(&caminho);
+    let coords = caminho_coord(&caminho, cols);
 
     println!("The path from S to G is: {:?}", caminho);
     println!("That is, the directions will be: {:?}", coords);
