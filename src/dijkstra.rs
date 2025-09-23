@@ -1,4 +1,4 @@
-//! # Algoritimo Dijstra
+//! # Algoritimo Dijkstra
 //! ## Conteúdo:
 //! Função de vértice mais próximo (vertice_mais_proximo());\
 //! Função do vetor de interseção (intersecao());\
