@@ -17,7 +17,7 @@ pub use std::fs;
 pub use std::io;
 pub use std::error::Error;
 
-/// # Reprenta o nó do grafo.
+/// # Representa o nó do grafo.
 /// ## Atributos
 /// "value" - Valor do vértice (sempre representado por um inteiro positivo);\
 /// "weight" - Valor do peso da aresta (podendo ser negativo ou positivo);\
@@ -63,7 +63,7 @@ impl Node {
     }
 }
 
-/// # Reprenta o grafo inteiro.
+/// # Representa o grafo inteiro.
 /// ## Atributos
 /// "is_zero_based" - Booleano paraque indica grafos que originalmente não são 0-based, para na hora de mostrar o grafo mostrar os valores dos vértices especificados.\
 /// "num_vertex" - Valor da quatidade de vértices do grafo (sempre representado por um inteiro positivo);\
