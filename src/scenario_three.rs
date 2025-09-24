@@ -28,20 +28,22 @@ pub fn achar_node(coords: &(usize, usize), coluumns: usize) -> usize {
 
 /// # Transforma um vetor de caminho em um vetor de string com direções
 pub fn caminho_coord(caminho: &Vec<usize>, col: usize) -> Vec<&str>{
-    let col_neg = -(col as isize);
+    let col_isize = col as isize; // Converter 'col' para isize para comparações
+    let col_neg_isize = -col_isize; // Agora este é o valor negativo correto
+
     let mut coords = vec![];
 
     for par in caminho.windows(2) {
         let i = par[0];
         let j = par[1];
-        let res = j as isize - i as isize;
+        let res = j as isize - i as isize; // res é um isize
 
         match res {
-            1 => coords.push("E"),              //Leste
-            -1 => coords.push("W"),             //Oeste
-            col => coords.push("S"),            //Sul
-            col_neg => coords.push("N"),        //Norte
-            _ => coords.push("?")               // case default
+            1 => coords.push("E"),                     // Leste
+            -1 => coords.push("W"),                    // Oeste
+            val if val == col_isize => coords.push("S"), // Se res for igual ao VALOR de col
+            val if val == col_neg_isize => coords.push("N"), // Se res for igual ao VALOR de col_neg
+            _ => coords.push("?")                     // case default
         };
     }
 
